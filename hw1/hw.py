@@ -41,7 +41,43 @@ for i in range(len(tData)):
 tdSet = tData[:math.floor(len(tData)*0.8), :]
 lbSet = label[:math.floor(len(label)*0.8), :]
 
-tdValidation = tData[math.floor(len(tData)*0.8):, :]
-lbValidation = label[math.floor(len(label)*0.8):, :]
+tdValidation = tData[math.floor(len(tData)*0.6):, :]
+lbValidation = label[math.floor(len(label)*0.6):, :]
 
-print(len(tdSet[0]))
+dim = 18*9 + 1
+#w = np.zeros([dim, 1])
+w = np.load("weight.npy")
+y_lbSet = np.zeros([len(lbSet), 1])
+tdSet = np.concatenate((np.ones([len(tdSet), 1]), tdSet), axis=1).astype(float)
+tdValidation = np.concatenate((np.ones([len(tdValidation), 1]), tdValidation), axis=1).astype(float)
+adagrad = np.zeros([dim, 1])
+
+def training(tdSet, lbSet, w, y_lbSet, adagrad):
+    iter_time = 200
+    eps = 0.0000000001
+    learning_rate = 0.02
+    for t in range(iter_time):
+        y_lbSet = np.dot(tdSet, w) - lbSet
+        loss = np.power(y_lbSet, 2)
+        loss = np.sum(loss) / len(tdSet)
+        loss = np.sqrt(loss)
+        if (t % 100 == 0):
+            print("迭代的次数：%i ， 损失值：%f" % (t, loss))
+        gradient = np.dot(tdSet.transpose(), y_lbSet) / (loss * len(tdSet))
+        adagrad = adagrad + (gradient ** 2)
+        w = w - learning_rate * gradient / np.sqrt(adagrad + eps)
+    np.save('weight.npy', w)
+
+def testing(tdSet, lbSet, y_lbSet):
+    y = np.dot(tdSet, w)
+    y_lbSet = y - lbSet
+    loss = np.power(y_lbSet, 2)
+    loss = np.sum(loss) / len(tdSet)
+    loss = np.sqrt(loss)
+    print("测试数据 ， 损失值：%f" % (loss))
+    print(np.concatenate((y, lbSet), axis=1))
+    #print(y)
+    #print(lbSet)
+
+testing(tdValidation, lbValidation, y_lbSet)
+
