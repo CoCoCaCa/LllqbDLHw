@@ -7,11 +7,11 @@ data = pd.read_csv("train.csv", encoding="big5")
 data = data.iloc[:, 3:]
 data[data == 'NR'] = 0
 raw_data = data.to_numpy()
-#print(raw_data)
+# print(raw_data)
 
 month_data = {}
 for month in range(12):
-    #18行，480列的空数组
+    # 18行，480列的空数组
     sample = np.empty([18, 480])
     for day in range(20):
         spMin = day*24
@@ -31,7 +31,7 @@ for month in range(12):
             tData[hour+day*24+month*471] = month_data[month][:, hour+day*24:hour+day*24+9].reshape(1, -1)
             label[hour+day*24+month*471] = month_data[month][9, hour+day*24+9]
 
-#归一化
+# 归一化
 tDataMean = np.mean(tData, axis=0)
 std_x = np.std(tData, axis=0)
 for i in range(len(tData)):
@@ -45,7 +45,7 @@ tdValidation = tData[math.floor(len(tData)*0.6):, :]
 lbValidation = label[math.floor(len(label)*0.6):, :]
 
 dim = 18*9 + 1
-#w = np.zeros([dim, 1])
+# w = np.zeros([dim, 1])
 w = np.load("weight.npy")
 y_lbSet = np.zeros([len(lbSet), 1])
 tdSet = np.concatenate((np.ones([len(tdSet), 1]), tdSet), axis=1).astype(float)
@@ -76,8 +76,8 @@ def testing(tdSet, lbSet, y_lbSet):
     loss = np.sqrt(loss)
     print("测试数据 ， 损失值：%f" % (loss))
     print(np.concatenate((y, lbSet), axis=1))
-    #print(y)
-    #print(lbSet)
+    # print(y)
+    # print(lbSet)
 
 testing(tdValidation, lbValidation, y_lbSet)
 
