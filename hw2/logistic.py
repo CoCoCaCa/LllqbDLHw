@@ -20,3 +20,13 @@ with open(X_test_fpath) as f:
         data.append(line.strip('\n').split(',')[1:])
     X_test = np.array(data)
 
+
+# 归一化
+def _normalize(X, train=True, specifide_colum=None, X_mean=None, X_std=None):
+    # This function normalizes specific columns of X.
+    # The mean and standard variance of training data will be reused when processing testing data.
+    #
+    # Arguments:
+    #   X: data to be processd
+    #   train: 'True' when processing training data, 'False' for testing data
+    #   specifide_colum: indexes of the columns that will be normalized. If 'None', all columns will be normalized
